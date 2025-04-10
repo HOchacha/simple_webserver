@@ -29,9 +29,9 @@ func (f *TLSSocketFilter) Init(config map[string]interface{}) error {
 
 	kp := NewKeyProvider(certPath, keyPath)
 
-	tlsCfg := &TLSConfig{KeyProvider: kp}
+	tlsCfg := NewTLSConfigBuilder(kp)
 	var err error
-	f.config, err = tlsCfg.BuildTLSConfig()
+	f.config, err = tlsCfg.BuildDefaultTLSConfig()
 	if err != nil {
 		return fmt.Errorf("failed to build TLS config: %w", err)
 	}

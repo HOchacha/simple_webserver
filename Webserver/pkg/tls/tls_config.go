@@ -6,7 +6,13 @@ type TLSConfig struct {
 	KeyProvider *KeyProvider
 }
 
-func (cfg *TLSConfig) BuildTLSConfig() (*tls.Config, error) {
+func NewTLSConfigBuilder(kp *KeyProvider) *TLSConfig {
+	return &TLSConfig{
+		KeyProvider: kp,
+	}
+}
+
+func (cfg *TLSConfig) BuildDefaultTLSConfig() (*tls.Config, error) {
 	cert, err := cfg.KeyProvider.GetCertificate()
 	if err != nil {
 		return nil, err

@@ -12,3 +12,7 @@ type DiskFileLoader struct {
 func (fl *DiskFileLoader) Load(path string) ([]byte, error) {
 	return os.ReadFile(path)
 }
+
+func NewDiskFileLoader() *DiskFileLoader {
+	return &DiskFileLoader{}
+}

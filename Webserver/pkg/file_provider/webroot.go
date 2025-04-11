@@ -25,3 +25,7 @@ func (v *VirtualHostWebRoot) Open(path string) (fs.File, error) {
 	fullPath := filepath.Join(v.webRootPath, cleanPath)
 	return os.Open(fullPath)
 }
+
+func (v *VirtualHostWebRoot) RootPath() string {
+	return v.webRootPath
+}

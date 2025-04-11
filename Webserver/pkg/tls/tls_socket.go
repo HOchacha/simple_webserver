@@ -8,7 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"webserver/Webserver/pkg/filterchain"
+	"webserver/Webserver/pkg/types"
 )
 
 type TLSSocket struct {
@@ -19,7 +19,7 @@ type TLSSocket struct {
 
 type TLSSocketFilter struct {
 	config *tls.Config
-	next   filterchain.Filter
+	next   types.Filter
 }
 
 func (f *TLSSocketFilter) Init(config map[string]interface{}) error {
@@ -48,7 +48,7 @@ func (f *TLSSocketFilter) Handle(conn net.Conn) error {
 	return f.next.Handle(tlsConn)
 }
 
-func (f *TLSSocketFilter) SetNext(next filterchain.Filter) {
+func (f *TLSSocketFilter) SetNext(next types.Filter) {
 	f.next = next
 }
 

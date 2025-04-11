@@ -1,0 +1,8 @@
+filterChain:
+  listener:
+    port: 8080
+  tlsSocket:
+    certPath: /path/to/cert
+    keyPath: /path/to/key
+  httpManager:
+    webRoot: /path/to/webroot

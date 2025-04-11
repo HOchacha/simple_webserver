@@ -28,7 +28,6 @@ func NewCGIEngine(scriptRoot, fastcgiSocket string, isUnix bool) *CGIEngine {
 func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath string) {
 	scriptFullPath := filepath.Join(c.ScriptRoot, filepath.Clean(scriptPath))
 
-	// FastCGI 연결
 	var conn *fcgiclient.FCGIClient
 	var err error
 	if c.IsUnixSocket {
@@ -42,7 +41,6 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 	}
 	defer conn.Close()
 
-	// 환경변수 구성
 	params := map[string]string{
 		"SCRIPT_FILENAME":   scriptFullPath,
 		"REQUEST_METHOD":    r.Method,
@@ -69,7 +67,6 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 		stdin = r.Body
 	}
 
-	// FastCGI 요청
 	resp, err := conn.Request(params, stdin)
 	if err != nil {
 		http.Error(w, "FastCGI 요청 실패: "+err.Error(), http.StatusInternalServerError)
@@ -77,7 +74,6 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 	}
 	defer resp.Body.Close()
 
-	// 헤더 읽기
 	br := bufio.NewReader(resp.Body)
 	headers := http.Header{}
 	for {
@@ -88,7 +84,7 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 		}
 		line = strings.TrimRight(line, "\r\n")
 		if line == "" {
-			break // 헤더 끝
+			break
 		}
 		parts := strings.SplitN(line, ":", 2)
 		if len(parts) != 2 {
@@ -99,7 +95,6 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 		headers.Add(key, val)
 	}
 
-	// 상태코드 처리
 	if statusLine := headers.Get("Status"); statusLine != "" {
 		headers.Del("Status")
 		statusParts := strings.SplitN(statusLine, " ", 2)
@@ -112,14 +107,12 @@ func (c *CGIEngine) HandleCGI(w http.ResponseWriter, r *http.Request, scriptPath
 		w.WriteHeader(http.StatusOK)
 	}
 
-	// 나머지 헤더 전달
 	for k, vv := range headers {
 		for _, v := range vv {
 			w.Header().Add(k, v)
 		}
 	}
 
-	// 바디 복사
 	io.Copy(w, br)
 }
 
